@@ -8,10 +8,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Assert;
 
 import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -25,16 +24,17 @@ public class UserRepositoryTest {
 		// Given
 		String userAName = generateName();
 		String userAEmail = generateEmail();
-		User userA = new User(userAName, userAEmail);
-		userA = userRepository.save(userA);
+		User user1 = new User(userAName, userAEmail);
+		user1 = userRepository.save(user1);
 
 		// When
-		User userFound = userRepository.findUserById(userA.getId());
+		User userFound = userRepository.findById(user1.getId()).get();
 
 		// Then
-		assertThat(userFound.getId()).isEqualTo(userA.getId());
+		Assert.notNull(userFound, "No user found");
+		Assert.isTrue(user1.getId().equals(userFound.getId()), "No user found");
 
-		cleanupUser(userA);
+		cleanupUser(user1);
 	}
 
 	@Test
@@ -42,45 +42,44 @@ public class UserRepositoryTest {
 		// Given
 		String userAName = generateName();
 		String userAEmail = generateEmail();
-		User userA = new User(userAName, userAEmail);
-		userA = userRepository.save(userA);
+		User user1 = new User(userAName, userAEmail);
+		user1 = userRepository.save(user1);
 
 		// When
-		List<User> usersFoundWithCase = userRepository.findUserByNameIgnoreCase(userA.getName());
-		List<User> usersFoundIgnoreCase = userRepository.findUserByNameIgnoreCase(userA.getName().toLowerCase());
+		List<User> usersFoundWithCase = userRepository.findUserByNameIgnoreCase(user1.getName());
+		List<User> usersFoundIgnoreCase = userRepository.findUserByNameIgnoreCase(user1.getName().toLowerCase());
 
 		// Then
-		assertThat(usersFoundWithCase.size()).isGreaterThan(0);
-		assertThat(usersFoundWithCase.get(0).getName()).isEqualToIgnoringCase(userAName);
+		Assert.notEmpty(usersFoundWithCase, "No users found");
+		Assert.isTrue(usersFoundWithCase.get(0).getName().equalsIgnoreCase(userAName), "User not found with exact case");
 
-		assertThat(usersFoundIgnoreCase.size()).isGreaterThan(0);
-		assertThat(usersFoundIgnoreCase.get(0).getName()).isEqualToIgnoringCase(userAName);
+		Assert.notEmpty(usersFoundIgnoreCase, "No users found");
+		Assert.isTrue(usersFoundIgnoreCase.get(0).getName().equalsIgnoreCase(userAName), "User not found with inexact case");
 
-		cleanupUser(userA);
+		cleanupUser(user1);
 	}
 
 	@Test(expected = org.springframework.dao.DuplicateKeyException.class)
-//	@Test
 	public void whenInsertUser_thenFailToDuplicateEmail() {
 		// Given
 		String userAName = generateName();
 		String userAEmail = generateEmail();
-		User userA = new User(userAName, userAEmail);
-		userRepository.save(userA);
+		User user1 = new User(userAName, userAEmail);
+		user1 = userRepository.save(user1);
 
-		User userB = new User(generateName(), userAEmail);
+		User user2 = new User(generateName(), userAEmail);
 
 		// When
-		userRepository.save(userB);
+		userRepository.save(user2);
 
 		// Then
 		// throw DuplicateKeyException
 
-		cleanupUser(userA);
+		cleanupUser(user1);
 	}
 
 	private void cleanupUser(User user) {
-		userRepository.deleteUserById(user.getId());
+		userRepository.deleteById(user.getId());
 	}
 
 	private static String generateEmail() {

@@ -16,8 +16,6 @@ public class User {
 
 	private String name;
 
-	public User() {}
-
 	public User(String name, String email) {
 		setName(name);
 		setEmail(email);
