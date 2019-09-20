@@ -22,19 +22,17 @@ public class UserRepositoryTest {
 	@Test
 	public void whenFindById_thenReturnUser() {
 		// Given
-		String userAName = generateName();
-		String userAEmail = generateEmail();
-		User user1 = new User(userAName, userAEmail);
-		user1 = userRepository.save(user1);
+		User user = new User(generateName(), generateEmail());
+		user = userRepository.save(user);
 
 		// When
-		User userFound = userRepository.findById(user1.getId()).get();
+		User userFound = userRepository.findById(user.getId()).get();
 
 		// Then
 		Assert.notNull(userFound, "No user found");
-		Assert.isTrue(user1.getId().equals(userFound.getId()), "No user found");
+		Assert.isTrue(user.getId().equals(userFound.getId()), "No user found");
 
-		cleanupUser(user1);
+		cleanupUser(user);
 	}
 
 	@Test
@@ -76,6 +74,22 @@ public class UserRepositoryTest {
 		// throw DuplicateKeyException
 
 		cleanupUser(user1);
+	}
+
+	@Test
+	public void whenFindUserByEmail_thenReturnUser() {
+		// Given
+		User user = new User(generateName(), generateEmail());
+		user = userRepository.save(user);
+
+		// When
+		User userFound = userRepository.findUserByEmail(user.getEmail()).get();
+
+		// Then
+		Assert.notNull(userFound, "No user found");
+		Assert.isTrue(user.getId().equals(userFound.getId()), "No user found");
+
+		cleanupUser(user);
 	}
 
 	private void cleanupUser(User user) {
