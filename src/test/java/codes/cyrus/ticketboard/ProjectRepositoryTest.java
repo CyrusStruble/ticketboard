@@ -39,7 +39,7 @@ public class ProjectRepositoryTest {
 	}
 
 	@Test
-	public void whenFindProjectsByOwnerId_thenReturnProjects() {
+	public void whenFindProjectsByCreatorId_thenReturnProjects() {
 		// Given
 		String ownerId = generateUserId();
 		Project project1 = new Project(generateName(), ownerId);
@@ -49,13 +49,13 @@ public class ProjectRepositoryTest {
 		project2 = projectRepository.save(project2);
 
 		// When
-		List<Project> projectsFound = projectRepository.findProjectsByOwnerId(ownerId);
+		List<Project> projectsFound = projectRepository.findProjectsByCreatorId(ownerId);
 
 		// Then
 		Assert.notEmpty(projectsFound, "No projects found");
 		Assert.isTrue(projectsFound.size() == 2, "Failed to find exactly two projects");
-		Assert.isTrue(projectsFound.get(0).getOwnerId().equals(ownerId), "Found a project with non-matching ownerId");
-		Assert.isTrue(projectsFound.get(1).getOwnerId().equals(ownerId), "Found a project with non-matching ownerId");
+		Assert.isTrue(projectsFound.get(0).getCreatorId().equals(ownerId), "Found a project with non-matching ownerId");
+		Assert.isTrue(projectsFound.get(1).getCreatorId().equals(ownerId), "Found a project with non-matching ownerId");
 
 		cleanupProject(project1, project2);
 	}
@@ -102,7 +102,7 @@ public class ProjectRepositoryTest {
 	}
 
 	@Test
-	public void whenDeleteProjectsByOwnerId_thenProjectsAreDeleted() {
+	public void whenDeleteProjectsByCreatorId_thenProjectsAreDeleted() {
 		// Given
 		String ownerId = generateUserId();
 		Project project1 = new Project(generateName(), ownerId);
@@ -115,7 +115,7 @@ public class ProjectRepositoryTest {
 		project3 = projectRepository.save(project3);
 
 		// When
-		projectRepository.deleteProjectsByOwnerId(ownerId);
+		projectRepository.deleteProjectsByCreatorId(ownerId);
 		Optional<Project> project1Found = projectRepository.findById(project1.getId());
 		Optional<Project> project2Found = projectRepository.findById(project2.getId());
 		Optional<Project> project3Found = projectRepository.findById(project3.getId());

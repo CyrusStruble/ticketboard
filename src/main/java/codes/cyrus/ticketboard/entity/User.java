@@ -1,24 +1,19 @@
 package codes.cyrus.ticketboard.entity;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 @Document
-public class User {
+public class User extends CommonEntity {
 
 	public enum Role {
 		USER, ADMIN
 	}
-
-	@Id
-	private String id;
 
 	@Indexed(unique = true)
 	private String email;
@@ -29,17 +24,11 @@ public class User {
 
 	private Set<Role> roles;
 
-	private LocalDateTime createDate = LocalDateTime.now();
-
-	private LocalDateTime updateDate = LocalDateTime.now();
-
 	public User(String name, String email) {
 		setName(name);
 		setEmail(email);
 		roles = Collections.singleton(Role.USER);
 	}
-
-	public String getId() { return id; }
 
 	public void setEmail(String email) {
 		if (StringUtils.isEmpty(email)) {
@@ -83,24 +72,9 @@ public class User {
 		roles.add(role);
 	}
 
-	public LocalDateTime getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(LocalDateTime createDate) {
-		this.createDate = createDate;
-	}
-
-	public LocalDateTime getUpdateDate() {
-		return updateDate;
-	}
-
-	public void setUpdateDate(LocalDateTime updateDate) {
-		this.updateDate = updateDate;
-	}
-
 	@Override
 	public String toString() {
-		return String.format("User[id=%s, name='%s', email='%s']", id, name, email);
+		return String.format("User[id=%s, name='%s', email='%s', createDate='%s', updateDate='%s']", getId(), name, email,
+				getCreateDate(), getUpdateDate());
 	}
 }
