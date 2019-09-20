@@ -1,7 +1,7 @@
 package codes.cyrus.ticketboard.service;
 
 import codes.cyrus.ticketboard.dto.UserDto;
-import codes.cyrus.ticketboard.entity.User;
+import codes.cyrus.ticketboard.document.User;
 import codes.cyrus.ticketboard.exception.ResourceNotFoundException;
 import codes.cyrus.ticketboard.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

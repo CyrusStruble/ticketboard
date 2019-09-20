@@ -1,4 +1,4 @@
-package codes.cyrus.ticketboard.entity;
+package codes.cyrus.ticketboard.document;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Document
-public class CommonEntity {
+public class CommonDocument {
 
 	@Id
 	private String id;

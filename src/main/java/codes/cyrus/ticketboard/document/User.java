@@ -1,4 +1,4 @@
-package codes.cyrus.ticketboard.entity;
+package codes.cyrus.ticketboard.document;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,11 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Document
-public class User extends CommonEntity {
-
-	public enum Role {
-		USER, ADMIN
-	}
+public class User extends CommonDocument {
 
 	@Indexed(unique = true)
 	private String email;

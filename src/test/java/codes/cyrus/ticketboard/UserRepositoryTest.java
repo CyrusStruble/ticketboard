@@ -1,6 +1,6 @@
 package codes.cyrus.ticketboard;
 
-import codes.cyrus.ticketboard.entity.User;
+import codes.cyrus.ticketboard.document.User;
 import codes.cyrus.ticketboard.repository.UserRepository;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;

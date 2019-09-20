@@ -1,6 +1,6 @@
 package codes.cyrus.ticketboard.repository;
 
-import codes.cyrus.ticketboard.entity.User;
+import codes.cyrus.ticketboard.document.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

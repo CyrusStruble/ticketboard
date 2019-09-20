@@ -1,6 +1,6 @@
 package codes.cyrus.ticketboard;
 
-import codes.cyrus.ticketboard.entity.Project;
+import codes.cyrus.ticketboard.document.Project;
 import codes.cyrus.ticketboard.repository.ProjectRepository;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bson.types.ObjectId;

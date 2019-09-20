@@ -1,6 +1,7 @@
 package codes.cyrus.ticketboard.service;
 
-import codes.cyrus.ticketboard.entity.User;
+import codes.cyrus.ticketboard.document.Role;
+import codes.cyrus.ticketboard.document.User;
 import codes.cyrus.ticketboard.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +44,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				accountNonExpired, credentialsNonExpired, accountNonLocked, getAuthorities(user.getRoles()));
 	}
 
-	private static List<GrantedAuthority> getAuthorities(Set<User.Role> roles) {
+	private static List<GrantedAuthority> getAuthorities(Set<Role> roles) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		for (User.Role role : roles) {
+		for (Role role : roles) {
 			authorities.add(new SimpleGrantedAuthority(role.toString()));
 		}
 

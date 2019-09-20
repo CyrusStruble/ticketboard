@@ -1,4 +1,4 @@
-package codes.cyrus.ticketboard.entity;
+package codes.cyrus.ticketboard.document;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document
-public class Project extends CommonEntity {
+public class Project extends CommonDocument {
 
 	@Indexed
 	private String name;
+
+	private String prefix;
 
 	private List<String> associatedUserIds;
 
@@ -25,6 +27,14 @@ public class Project extends CommonEntity {
 	}
 
 	public String getName() { return name; }
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
 
 	public void associateUserId(String userId) {
 		associatedUserIds.add(userId);
