@@ -5,11 +5,13 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Document
 public class Project {
+
 	@Id
 	private String id;
 
@@ -20,6 +22,10 @@ public class Project {
 	private String ownerId;
 
 	private List<String> associatedUserIds;
+
+	private LocalDateTime createDate = LocalDateTime.now();
+
+	private LocalDateTime updateDate = LocalDateTime.now();
 
 	public Project(String name, String ownerId) {
 		setName(name);
@@ -55,6 +61,22 @@ public class Project {
 
 	public List<String> getAssociatedUserIds() {
 		return new ArrayList<>(associatedUserIds);
+	}
+
+	public LocalDateTime getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(LocalDateTime createDate) {
+		this.createDate = createDate;
+	}
+
+	public LocalDateTime getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(LocalDateTime updateDate) {
+		this.updateDate = updateDate;
 	}
 
 	@Override

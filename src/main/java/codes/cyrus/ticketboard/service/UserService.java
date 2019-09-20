@@ -22,20 +22,28 @@ public class UserService {
 		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
 		user = userRepository.save(user);
-		userDto.setId(user.getId());
 
-		return userDto;
+		return convertToDto(user);
 	}
 
 	public UserDto getUser(String id) {
 		User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
-		return new UserDto(user.getName(), user.getEmail(), user.getId());
+		return convertToDto(user);
 	}
 
 	public UserDto getUserByEmail(String email) {
 		User user = userRepository.findUserByEmail(email).orElseThrow(ResourceNotFoundException::new);
 
-		return new UserDto(user.getName(), user.getEmail(), user.getId());
+		return convertToDto(user);
+	}
+
+	public static UserDto convertToDto(User user) {
+		UserDto userDto = new UserDto(user.getName(), user.getEmail());
+		userDto.setId(user.getId());
+		userDto.setCreateDate(user.getCreateDate());
+		userDto.setUpdateDate(user.getUpdateDate());
+
+		return userDto;
 	}
 }

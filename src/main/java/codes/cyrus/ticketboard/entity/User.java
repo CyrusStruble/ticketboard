@@ -3,9 +3,9 @@ package codes.cyrus.ticketboard.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +28,10 @@ public class User {
 	private String password;
 
 	private Set<Role> roles;
+
+	private LocalDateTime createDate = LocalDateTime.now();
+
+	private LocalDateTime updateDate = LocalDateTime.now();
 
 	public User(String name, String email) {
 		setName(name);
@@ -77,6 +81,22 @@ public class User {
 
 	public void addRole(Role role) {
 		roles.add(role);
+	}
+
+	public LocalDateTime getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(LocalDateTime createDate) {
+		this.createDate = createDate;
+	}
+
+	public LocalDateTime getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(LocalDateTime updateDate) {
+		this.updateDate = updateDate;
 	}
 
 	@Override

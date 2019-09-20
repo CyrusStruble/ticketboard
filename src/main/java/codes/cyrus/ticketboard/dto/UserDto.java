@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 public class UserDto {
 	@NotNull
@@ -21,6 +22,10 @@ public class UserDto {
 	private String password;
 
 	private String id;
+
+	private LocalDateTime createDate = LocalDateTime.now();
+
+	private LocalDateTime updateDate = LocalDateTime.now();
 
 	@JsonCreator
 	public UserDto(String name, String email) {
@@ -67,5 +72,25 @@ public class UserDto {
 	@JsonIgnore
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	@JsonProperty
+	public LocalDateTime getCreateDate() {
+		return createDate;
+	}
+
+	@JsonIgnore
+	public void setCreateDate(LocalDateTime createDate) {
+		this.createDate = createDate;
+	}
+
+	@JsonProperty
+	public LocalDateTime getUpdateDate() {
+		return updateDate;
+	}
+
+	@JsonIgnore
+	public void setUpdateDate(LocalDateTime updateDate) {
+		this.updateDate = updateDate;
 	}
 }

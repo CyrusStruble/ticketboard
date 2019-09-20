@@ -1,7 +1,6 @@
 package codes.cyrus.ticketboard.controller;
 
 import codes.cyrus.ticketboard.dto.UserDto;
-import codes.cyrus.ticketboard.entity.User;
 import codes.cyrus.ticketboard.repository.UserRepository;
 import codes.cyrus.ticketboard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
