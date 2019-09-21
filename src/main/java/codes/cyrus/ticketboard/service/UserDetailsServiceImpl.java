@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-		User user = userRepository.findUserByEmail(s).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		User user = userRepository.findByEmail(s).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 		boolean enabled = true;
 		boolean accountNonExpired = true;
 		boolean credentialsNonExpired = true;

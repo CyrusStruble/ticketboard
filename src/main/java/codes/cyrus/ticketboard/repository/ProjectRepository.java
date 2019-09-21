@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface ProjectRepository extends MongoRepository<Project, String> {
-	List<Project> findProjectsByCreatorId(String createdById);
-	List<Project> findProjectsByAssociatedUserIds(String associatedUserId);
-	void deleteProjectsByCreatorId(String createdById);
+	List<Project> findByCreatorId(String createdById);
+	List<Project> findByAssociatedUserIds(String associatedUserId);
+	void deleteByCreatorId(String createdById);
 }

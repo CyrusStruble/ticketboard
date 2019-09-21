@@ -1,8 +1,11 @@
 package codes.cyrus.ticketboard.document;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,6 +19,7 @@ public class User extends CommonDocument {
 
 	private String name;
 
+	@ToStringExclude
 	private String password;
 
 	private Set<Role> roles;
@@ -27,20 +31,12 @@ public class User extends CommonDocument {
 	}
 
 	public void setEmail(String email) {
-		if (StringUtils.isEmpty(email)) {
-			throw new IllegalArgumentException("Null or empty is not allowed for email");
-		}
-
 		this.email = email;
 	}
 
 	public String getEmail() { return email; }
 
 	public void setName(String name) {
-		if (StringUtils.isEmpty(name)) {
-			throw new IllegalArgumentException("Null or empty is not allowed for name");
-		}
-
 		this.name = name;
 	}
 
@@ -49,10 +45,6 @@ public class User extends CommonDocument {
 	public String getPassword() { return password; }
 
 	public void setPassword(String password) {
-		if (StringUtils.isEmpty(password)) {
-			throw new IllegalArgumentException("Null or empty is not allowed for password");
-		}
-
 		this.password = password;
 	}
 
@@ -70,7 +62,31 @@ public class User extends CommonDocument {
 
 	@Override
 	public String toString() {
-		return String.format("User[id=%s, name='%s', email='%s', createDate='%s', updateDate='%s']", getId(), name, email,
-				getCreateDate(), getUpdateDate());
+		return ReflectionToStringBuilder.toString(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) { return false; }
+		if (obj == this) { return true; }
+		if (obj.getClass() != getClass()) {
+			return false;
+		}
+
+		User rhs = (User) obj;
+
+		return new EqualsBuilder()
+				.appendSuper(super.equals(obj))
+				.append(name, rhs.name)
+				.append(email, rhs.email)
+				.isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(9, 29)
+				.append(name)
+				.append(email)
+				.toHashCode();
 	}
 }

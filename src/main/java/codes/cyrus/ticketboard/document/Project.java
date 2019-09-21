@@ -1,5 +1,8 @@
 package codes.cyrus.ticketboard.document;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -40,13 +43,37 @@ public class Project extends CommonDocument {
 		associatedUserIds.add(userId);
 	}
 
+	public void deassociateUserId(String userId) { associatedUserIds.remove(userId); }
+
 	public List<String> getAssociatedUserIds() {
 		return new ArrayList<>(associatedUserIds);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("Project[id=%s, name='%s', creatorId='%s', createDate='%s', updateDate='%s']", getId(), name,
-				getCreatorId(), getCreateDate(), getUpdateDate());
+		return ReflectionToStringBuilder.toString(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) { return false; }
+		if (obj == this) { return true; }
+		if (obj.getClass() != getClass()) {
+			return false;
+		}
+
+		Project rhs = (Project) obj;
+
+		return new EqualsBuilder()
+				.appendSuper(super.equals(obj))
+				.append(name, rhs.name)
+				.isEquals();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(11, 31)
+				.append(name)
+				.toHashCode();
 	}
 }

@@ -33,7 +33,7 @@ public class UserService {
 	}
 
 	public UserDto getUserByEmail(String email) {
-		User user = userRepository.findUserByEmail(email).orElseThrow(ResourceNotFoundException::new);
+		User user = userRepository.findByEmail(email).orElseThrow(ResourceNotFoundException::new);
 
 		return convertToDto(user);
 	}

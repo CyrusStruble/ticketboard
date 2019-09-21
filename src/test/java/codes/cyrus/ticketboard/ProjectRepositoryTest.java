@@ -1,12 +1,8 @@
 package codes.cyrus.ticketboard;
 
 import codes.cyrus.ticketboard.document.Project;
-import codes.cyrus.ticketboard.repository.ProjectRepository;
-import org.apache.commons.lang.RandomStringUtils;
-import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
@@ -17,10 +13,7 @@ import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ProjectRepositoryTest {
-
-	@Autowired
-	private ProjectRepository projectRepository;
+public class ProjectRepositoryTest extends CommonRepositoryTest {
 
 	@Test
 	public void whenFindProjectById_thenReturnProject() {
@@ -49,7 +42,7 @@ public class ProjectRepositoryTest {
 		project2 = projectRepository.save(project2);
 
 		// When
-		List<Project> projectsFound = projectRepository.findProjectsByCreatorId(ownerId);
+		List<Project> projectsFound = projectRepository.findByCreatorId(ownerId);
 
 		// Then
 		Assert.notEmpty(projectsFound, "No projects found");
@@ -82,7 +75,7 @@ public class ProjectRepositoryTest {
 		project3 = projectRepository.save(project2);
 
 		// When
-		List<Project> projectsFound = projectRepository.findProjectsByAssociatedUserIds(associatedUserId);
+		List<Project> projectsFound = projectRepository.findByAssociatedUserIds(associatedUserId);
 
 		// Then
 		Assert.notEmpty(projectsFound, "No projects found");
@@ -93,12 +86,6 @@ public class ProjectRepositoryTest {
 				"Project with non-matching associatedUserIds found");
 
 		cleanupProject(project1, project2, project3);
-	}
-
-	private void cleanupProject(Project... projects) {
-		for (Project project : projects) {
-			projectRepository.deleteById(project.getId());
-		}
 	}
 
 	@Test
@@ -115,7 +102,7 @@ public class ProjectRepositoryTest {
 		project3 = projectRepository.save(project3);
 
 		// When
-		projectRepository.deleteProjectsByCreatorId(ownerId);
+		projectRepository.deleteByCreatorId(ownerId);
 		Optional<Project> project1Found = projectRepository.findById(project1.getId());
 		Optional<Project> project2Found = projectRepository.findById(project2.getId());
 		Optional<Project> project3Found = projectRepository.findById(project3.getId());
@@ -127,12 +114,29 @@ public class ProjectRepositoryTest {
 
 		cleanupProject(project1, project2, project3);
 	}
-
-	private static String generateName() {
-		return RandomStringUtils.randomAlphabetic(10);
-	}
-
-	private static String generateUserId() {
-		return new ObjectId().toString();
-	}
+//
+//	@Test
+//	public void whenFindTicketsByProjectId_thenReturnTickets() {
+//		// Given
+//		String ownerId = generateUserId();
+//		Project project = new Project(generateName(), ownerId);
+//
+//
+//		Ticket ticket1 = new Ticket("Ticket 1");
+//		Ticket ticket2 =new Ticket("Ticket 2");
+//		project.addTicket(ticket1);
+//		project.addTicket(ticket2);
+//
+//		project = projectRepository.save(project);
+//
+//		// When
+//		List<Ticket> tickets = projectRepository.findTicketsByProjectId(project.getId());
+//
+//		// Then
+//		Assert.notEmpty(tickets, "Failed to find tickets");
+//		Assert.isTrue(tickets.size() == 2, "Failed to find exactly two tickets, found: " + tickets.toString());
+//		Assert.isTrue(tickets.containsAll(Arrays.asList(ticket1, ticket2)), "Failed to find matching tickets");
+//
+//		cleanupProject(project);
+//	}
 }

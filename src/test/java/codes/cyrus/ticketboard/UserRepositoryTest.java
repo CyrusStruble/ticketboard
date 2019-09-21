@@ -1,11 +1,9 @@
 package codes.cyrus.ticketboard;
 
 import codes.cyrus.ticketboard.document.User;
-import codes.cyrus.ticketboard.repository.UserRepository;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
@@ -14,10 +12,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class UserRepositoryTest {
-
-	@Autowired
-	private UserRepository userRepository;
+public class UserRepositoryTest extends CommonRepositoryTest {
 
 	@Test
 	public void whenFindById_thenReturnUser() {
@@ -44,8 +39,8 @@ public class UserRepositoryTest {
 		user1 = userRepository.save(user1);
 
 		// When
-		List<User> usersFoundWithCase = userRepository.findUserByNameIgnoreCase(user1.getName());
-		List<User> usersFoundIgnoreCase = userRepository.findUserByNameIgnoreCase(user1.getName().toLowerCase());
+		List<User> usersFoundWithCase = userRepository.findByNameIgnoreCase(user1.getName());
+		List<User> usersFoundIgnoreCase = userRepository.findByNameIgnoreCase(user1.getName().toLowerCase());
 
 		// Then
 		Assert.notEmpty(usersFoundWithCase, "No users found");
@@ -83,7 +78,7 @@ public class UserRepositoryTest {
 		user = userRepository.save(user);
 
 		// When
-		User userFound = userRepository.findUserByEmail(user.getEmail()).get();
+		User userFound = userRepository.findByEmail(user.getEmail()).get();
 
 		// Then
 		Assert.notNull(userFound, "No user found");
@@ -92,15 +87,8 @@ public class UserRepositoryTest {
 		cleanupUser(user);
 	}
 
-	private void cleanupUser(User user) {
-		userRepository.deleteById(user.getId());
-	}
-
-	private static String generateEmail() {
-		return RandomStringUtils.randomAlphabetic(10) + "@test-it-well.xyz";
-	}
-
-	private static String generateName() {
+	@Override
+	String generateName() {
 		return RandomStringUtils.randomAlphabetic(5) + " " + RandomStringUtils.randomAlphabetic(5);
 	}
 }
