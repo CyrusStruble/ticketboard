@@ -1,4 +1,4 @@
-package codes.cyrus.ticketboard;
+package codes.cyrus.ticketboard.repository;
 
 import codes.cyrus.ticketboard.document.Project;
 import org.junit.Test;

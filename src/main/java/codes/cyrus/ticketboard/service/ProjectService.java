@@ -4,11 +4,10 @@ import codes.cyrus.ticketboard.document.Project;
 import codes.cyrus.ticketboard.document.Role;
 import codes.cyrus.ticketboard.dto.ProjectDto;
 import codes.cyrus.ticketboard.dto.UserDto;
-import codes.cyrus.ticketboard.exception.NotAuthorizedException;
+import codes.cyrus.ticketboard.exception.ForbiddenException;
 import codes.cyrus.ticketboard.exception.ResourceNotFoundException;
 import codes.cyrus.ticketboard.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -28,7 +27,7 @@ public class ProjectService extends CommonService<ProjectDto, Project> {
 	public ProjectDto createProject(ProjectDto projectDto) {
 		UserDto requestingUser = userService.getCurrentUser();
 		if (!CollectionUtils.containsAny(requestingUser.getRoles(), Arrays.asList(Role.ADMIN, Role.SUPERADMIN))) {
-			throw new NotAuthorizedException();
+			throw new ForbiddenException();
 		}
 
 		Project project = new Project(projectDto.getName());
@@ -39,8 +38,8 @@ public class ProjectService extends CommonService<ProjectDto, Project> {
 	}
 
 	public void associateUserWithProject(String userId, String projectId) {
-		if (!userService.hasAccess(projectId)) {
-			throw new NotAuthorizedException();
+		if (!userService.hasAccessOnProject(projectId)) {
+			throw new ForbiddenException();
 		}
 
 		Project project = projectRepository.findById(projectId).orElseThrow(ResourceNotFoundException::new);

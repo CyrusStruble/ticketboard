@@ -3,7 +3,7 @@ package codes.cyrus.ticketboard.service;
 import codes.cyrus.ticketboard.document.Role;
 import codes.cyrus.ticketboard.dto.UserDto;
 import codes.cyrus.ticketboard.document.User;
-import codes.cyrus.ticketboard.exception.NotAuthorizedException;
+import codes.cyrus.ticketboard.exception.ForbiddenException;
 import codes.cyrus.ticketboard.exception.ResourceNotFoundException;
 import codes.cyrus.ticketboard.repository.UserRepository;
 import org.slf4j.Logger;
@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService extends CommonService<UserDto, User> {
@@ -44,15 +46,15 @@ public class UserService extends CommonService<UserDto, User> {
 	}
 
 	/**
-	 * Register a new user for a specific project as an admin.
+	 * Register a new user for a specific project.
 	 * @param userDto the user to create
 	 * @param projectId the project to assign the new user to
 	 * @return the created user
 	 */
 	public UserDto createUser(UserDto userDto, String projectId) {
 		UserDto requestingUser = getCurrentUser();
-		if (!hasAccess(requestingUser, projectId)) {
-			throw new NotAuthorizedException();
+		if (!hasAccessOnProject(requestingUser, projectId)) {
+			throw new ForbiddenException();
 		}
 
 		User user = new User(userDto.getName(), userDto.getEmail());
@@ -67,23 +69,59 @@ public class UserService extends CommonService<UserDto, User> {
 		return convertToDto(user);
 	}
 
-	public UserDto getUser(String id) {
-		User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+	/**
+	 * Delete a user with the given userId.
+	 * @param userId the userId to delete
+	 */
+	public void deleteUser(String userId) {
+		if (!hasAccessOnUser(userId)) {
+			throw new ForbiddenException();
+		}
+
+		userRepository.deleteById(userId);
+	}
+
+	/**
+	 * Search for a user with the given userId.
+	 * @param userId userId to search for
+	 * @return user with matching userId
+	 */
+	public UserDto getUser(String userId) {
+		if (!hasAccessOnUser(userId)) {
+			throw new ForbiddenException();
+		}
+
+		User user = userRepository.findById(userId).orElseThrow(ResourceNotFoundException::new);
 
 		return convertToDto(user);
 	}
 
+	/**
+	 * Get a user by their email address.
+	 * @param email email address to search for
+	 * @return user with matching email address
+	 */
 	public UserDto getUserByEmail(String email) {
-		User user = userRepository.findByEmail(email).orElseThrow(ResourceNotFoundException::new);
+		User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(ResourceNotFoundException::new);
+
+		if (!hasAccessOnUser(user.getId())) {
+			throw new ForbiddenException();
+		}
 
 		return convertToDto(user);
 	}
 
+	/**
+	 * Get the currently authenticated user.
+	 * @return currently authenticated user
+	 */
 	public UserDto getCurrentUser() {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (principal instanceof UserDetails) {
 			UserDetails userDetails = (UserDetails) principal;
-			return getUserByEmail(userDetails.getUsername());
+			return convertToDto(userRepository
+					.findByEmailIgnoreCase(userDetails.getUsername())
+					.orElseThrow(ResourceNotFoundException::new));
 		}
 
 		logger.info("Unexpected principal found: " + principal.toString());
@@ -91,22 +129,61 @@ public class UserService extends CommonService<UserDto, User> {
 	}
 
 	/**
-	 * Determine whether the current user has access to modify other users in the given project.
-	 * @param projectId projectId to determine access on
+	 * Determine whether the current user has access to modify the target user.
+	 * @param targetUserId userId to determine access on
 	 * @return true if the current user has access
 	 */
-	public boolean hasAccess(String projectId) {
-		return hasAccess(getCurrentUser(), projectId);
+	public boolean hasAccessOnUser(String targetUserId) {
+		return hasAccessOnUser(getCurrentUser(), targetUserId);
 	}
 
 	/**
-	 * Determine whether the given user has access to modify other users in the given project.
+	 * Determine whether the given user has access to modify the target user.
+	 * @param requestingUser user to determine access for
+	 * @param targetUserId userId to determine access on
+	 * @return true if the given user has access
+	 */
+	public boolean hasAccessOnUser(UserDto requestingUser, String targetUserId) {
+		if (requestingUser == null) {
+			return false;
+		}
+
+		if (requestingUser.getRoles().contains(Role.SUPERADMIN)) {
+			return true;
+		}
+
+		if (requestingUser.getId().equals(targetUserId)) {
+			return true;
+		}
+
+		// Admins have access if the user is in any project they have access to
+		if (requestingUser.getRoles().contains(Role.ADMIN)) {
+			List<String> requestingUserProjectIds = projectService.getProjectIdsForUserId(requestingUser.getId());
+			List<String> targetUserProjectIds = projectService.getProjectIdsForUserId(targetUserId);
+
+			requestingUserProjectIds.retainAll(targetUserProjectIds);
+
+			return (requestingUserProjectIds.size() > 0);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine whether the current user has access to modify the given project.
 	 * @param projectId projectId to determine access on
 	 * @return true if the current user has access
 	 */
-	public boolean hasAccess(UserDto user, String projectId) {
-		UserDto requestingUser = getCurrentUser();
+	public boolean hasAccessOnProject(String projectId) {
+		return hasAccessOnProject(getCurrentUser(), projectId);
+	}
 
+	/**
+	 * Determine whether the given user has access to modify the given project.
+	 * @param projectId projectId to determine access on
+	 * @return true if the current user has access
+	 */
+	public boolean hasAccessOnProject(UserDto requestingUser, String projectId) {
 		if (requestingUser == null) {
 			return false;
 		}

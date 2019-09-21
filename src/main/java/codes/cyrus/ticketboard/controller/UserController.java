@@ -36,6 +36,13 @@ public class UserController {
 		return ResponseEntity.ok(userService.getCurrentUser());
 	}
 
+	@DeleteMapping(value ="/{id}")
+	public ResponseEntity deleteUser(@PathVariable("id") String id) {
+		userService.deleteUser(id);
+
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
 	@GetMapping(value = "/{id:^[a-f0-9]{24}$}")
 	public ResponseEntity<UserDto> findUserById(@PathVariable("id") String id) {
 		return ResponseEntity.ok(userService.getUser(id));

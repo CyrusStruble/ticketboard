@@ -31,7 +31,11 @@ public class User extends CommonDocument {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		if (email == null) {
+			return;
+		}
+
+		this.email = email.toLowerCase();
 	}
 
 	public String getEmail() { return email; }

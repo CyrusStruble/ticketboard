@@ -1,4 +1,4 @@
-package codes.cyrus.ticketboard;
+package codes.cyrus.ticketboard.repository;
 
 import codes.cyrus.ticketboard.document.User;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -72,13 +72,13 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 	}
 
 	@Test
-	public void whenFindUserByEmail_thenReturnUser() {
+	public void whenFindUserByEmailIgnoreCase_thenReturnUser() {
 		// Given
 		User user = new User(generateName(), generateEmail());
 		user = userRepository.save(user);
 
 		// When
-		User userFound = userRepository.findByEmail(user.getEmail()).get();
+		User userFound = userRepository.findByEmailIgnoreCase(user.getEmail()).get();
 
 		// Then
 		Assert.notNull(userFound, "No user found");
@@ -88,7 +88,7 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 	}
 
 	@Override
-	String generateName() {
+	protected String generateName() {
 		return RandomStringUtils.randomAlphabetic(5) + " " + RandomStringUtils.randomAlphabetic(5);
 	}
 }
