@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -40,16 +41,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 		logger.info("Authenticating user: " + user.toString());
 
-		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), enabled,
+		org.springframework.security.core.userdetails.User userDetails = new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), enabled,
 				accountNonExpired, credentialsNonExpired, accountNonLocked, getAuthorities(user.getRoles()));
+
+		logger.info(userDetails.toString());
+
+		return userDetails;
 	}
 
 	private static List<GrantedAuthority> getAuthorities(Set<Role> roles) {
-		List<GrantedAuthority> authorities = new ArrayList<>();
-		for (Role role : roles) {
-			authorities.add(new SimpleGrantedAuthority(role.toString()));
-		}
-
-		return authorities;
+		return roles.stream()
+				.map(role -> new SimpleGrantedAuthority(role.toString()))
+				.collect(Collectors.toList());
 	}
 }

@@ -4,13 +4,15 @@ import codes.cyrus.ticketboard.dto.UserDto;
 import codes.cyrus.ticketboard.repository.UserRepository;
 import codes.cyrus.ticketboard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
 	@Autowired
@@ -19,18 +21,28 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping(method = RequestMethod.POST)
-	public @ResponseBody UserDto createUser(@Valid @RequestBody UserDto newUser) {
-		return userService.createUser(newUser);
+	@RequestMapping(value = "/projects/{projectId}", method = RequestMethod.POST)
+	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto user, @PathVariable("projectId") String projectId) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user, projectId));
+	}
+
+	@RequestMapping(value = "/signup", method = RequestMethod.POST)
+	public ResponseEntity<UserDto> signup(@Valid @RequestBody UserDto user) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(userService.signup(user));
+	}
+
+	@GetMapping(value = "/current")
+	public ResponseEntity<UserDto> getCurrent() {
+		return ResponseEntity.ok(userService.getCurrentUser());
 	}
 
 	@GetMapping(value = "/{id:^[a-f0-9]{24}$}")
-	public @ResponseBody UserDto findUserById(@PathVariable("id") String id) {
-		return userService.getUser(id);
+	public ResponseEntity<UserDto> findUserById(@PathVariable("id") String id) {
+		return ResponseEntity.ok(userService.getUser(id));
 	}
 
 	@GetMapping(value = "/{email:.*@.*}")
-	public @ResponseBody UserDto findUserByEmail(@PathVariable("email") String email) {
-		return userService.getUserByEmail(email);
+	public ResponseEntity<UserDto> findUserByEmail(@PathVariable("email") String email) {
+		return ResponseEntity.ok(userService.getUserByEmail(email));
 	}
 }

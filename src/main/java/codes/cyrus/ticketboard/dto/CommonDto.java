@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
-public class CommonDto {
+public abstract class CommonDto {
 
 	private String id;
 

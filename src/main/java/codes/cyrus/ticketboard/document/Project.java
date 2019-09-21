@@ -19,9 +19,8 @@ public class Project extends CommonDocument {
 
 	private List<String> associatedUserIds;
 
-	public Project(String name, String creatorId) {
+	public Project(String name) {
 		setName(name);
-		setCreatorId(creatorId);
 		associatedUserIds = new ArrayList<>();
 	}
 

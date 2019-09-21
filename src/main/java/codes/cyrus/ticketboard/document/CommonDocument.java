@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Document
-public class CommonDocument {
+public abstract class CommonDocument {
 
 	@Id
 	private String id;

@@ -7,7 +7,6 @@ import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +26,8 @@ public class User extends CommonDocument {
 	public User(String name, String email) {
 		setName(name);
 		setEmail(email);
-		roles = Collections.singleton(Role.USER);
+		roles = new HashSet<>();
+		roles.add(Role.USER);
 	}
 
 	public void setEmail(String email) {

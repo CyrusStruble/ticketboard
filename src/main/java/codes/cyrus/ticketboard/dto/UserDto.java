@@ -1,13 +1,16 @@
 package codes.cyrus.ticketboard.dto;
 
+import codes.cyrus.ticketboard.document.Role;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 public class UserDto extends CommonDto {
+
 	@NotNull
 	@NotEmpty
 	private String email;
@@ -19,6 +22,8 @@ public class UserDto extends CommonDto {
 	@NotNull
 	@NotEmpty
 	private String password;
+
+	private Set<Role> roles;
 
 	@JsonCreator
 	public UserDto(String name, String email) {
@@ -50,5 +55,15 @@ public class UserDto extends CommonDto {
 	@JsonProperty
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@JsonProperty
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	@JsonIgnore
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
 	}
 }

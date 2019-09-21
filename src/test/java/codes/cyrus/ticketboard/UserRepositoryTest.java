@@ -53,7 +53,7 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 	}
 
 	@Test(expected = org.springframework.dao.DuplicateKeyException.class)
-	public void whenInsertUser_thenFailToDuplicateEmail() {
+	public void whenCreatingUserWithDuplicateEmail_thenFailToCreateUser() {
 		// Given
 		String userAName = generateName();
 		String userAEmail = generateEmail();
@@ -66,7 +66,7 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 		userRepository.save(user2);
 
 		// Then
-		// throw DuplicateKeyException
+		// Throw DuplicateKeyException
 
 		cleanupUser(user1);
 	}

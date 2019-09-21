@@ -42,15 +42,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/users");
+		web.ignoring().antMatchers("/api/v1/users/signup");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.httpBasic()
+		http.csrf().disable()
+			.httpBasic()
 				.realmName(REALM_NAME)
 				.authenticationEntryPoint(new AuthenticationEntryPointImpl())
 			.and().authorizeRequests()
-				.anyRequest().authenticated();
+				.antMatchers("/api/v1/**").authenticated();
 	}
 }

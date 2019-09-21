@@ -11,6 +11,7 @@ import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -20,7 +21,8 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	public void whenFindByProjectId_thenReturnTickets() {
 		// Given
 		String creatorId = generateUserId();
-		Project project = new Project(generateName(), creatorId);
+		Project project = new Project(generateName());
+		project.setCreatorId(creatorId);
 		project.setPrefix("CYR1");
 
 		project = projectRepository.save(project);
@@ -48,7 +50,8 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	public void whenCountByProjectId_thenReturnCount() {
 		// Given
 		String creatorId = generateUserId();
-		Project project = new Project(generateName(), creatorId);
+		Project project = new Project(generateName());
+		project.setCreatorId(creatorId);
 		project.setPrefix("CYR2");
 
 		project = projectRepository.save(project);
@@ -74,7 +77,8 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	public void whenCountByProjectIdAndPriority_thenReturnCount() {
 		// Given
 		String creatorId = generateUserId();
-		Project project = new Project(generateName(), creatorId);
+		Project project = new Project(generateName());
+		project.setCreatorId(creatorId);
 		project.setPrefix("CYR3");
 
 		project = projectRepository.save(project);
@@ -111,7 +115,8 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	public void whenFindByProjectIdAndPriority_thenReturnTickets() {
 		// Given
 		String creatorId = generateUserId();
-		Project project = new Project(generateName(), creatorId);
+		Project project = new Project(generateName());
+		project.setCreatorId(creatorId);
 		project.setPrefix("CYR4");
 
 		project = projectRepository.save(project);
@@ -143,6 +148,54 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 		Assert.notEmpty(ticketsHighest, "Failed to find tickets");
 		Assert.isTrue(ticketsHighest.size() == 1, "Failed to find exactly two tickets, found: " + ticketsHigh.toString());
 		Assert.isTrue(ticketsHighest.contains(ticket3), "Failed to find matching tickets");
+
+		cleanupProject(project);
+	}
+
+	@Test
+	public void whenFindByName_thenReturnTicket() {
+		// Given
+		String creatorId = generateUserId();
+		Project project = new Project(generateName());
+		project.setCreatorId(creatorId);
+		project.setPrefix("CYR5");
+
+		project = projectRepository.save(project);
+
+		Ticket ticket = new Ticket(project.getId(), project.getPrefix() + "-1");
+		ticket.setCreatorId(creatorId);
+		ticket = ticketRepository.save(ticket);
+
+		// When
+		Optional<Ticket> ticketFound = ticketRepository.findByName(ticket.getName());
+
+		// Then
+		Assert.isTrue(ticketFound.isPresent(), "Failed to find ticket");
+		Assert.isTrue(ticketFound.get().equals(ticket), "Failed to find matching ticket");
+
+		cleanupProject(project);
+	}
+
+	@Test(expected = org.springframework.dao.DuplicateKeyException.class)
+	public void whenCreatingTicketWithDuplicateName_thenFailToCreateTicket() {
+		// Given
+		String creatorId = generateUserId();
+		Project project = new Project(generateName());
+		project.setCreatorId(creatorId);
+		project.setPrefix("CYR6");
+
+		project = projectRepository.save(project);
+
+		Ticket ticket1 = new Ticket(project.getId(), project.getPrefix() + "-1");
+		ticket1.setCreatorId(creatorId);
+		ticket1 = ticketRepository.save(ticket1);
+
+		// When
+		Ticket ticket2 = new Ticket(project.getId(), ticket1.getName());
+		ticketRepository.save(ticket2);
+
+		// Then
+		// Throw DuplicateKeyException
 
 		cleanupProject(project);
 	}
