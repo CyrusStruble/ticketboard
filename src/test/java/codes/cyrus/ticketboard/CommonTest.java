@@ -11,7 +11,7 @@ public abstract class CommonTest {
 		return RandomStringUtils.randomAlphabetic(10);
 	}
 
-	protected String generateUserId() {
+	protected String generateId() {
 		return new ObjectId().toString();
 	}
 

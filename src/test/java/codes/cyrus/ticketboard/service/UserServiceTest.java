@@ -21,17 +21,27 @@ public class UserServiceTest extends CommonServiceTest {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private ProjectService projectService;
+
 	@Test
 	@WithUserDetails(UserDetailsTestConfiguration.SUPERADMIN_USER)
-	public void whenGetUserAsSuperadmin_thenGetUser() {
+	public void whenGetUserAsSuperAdmin_thenGetUser() {
 		// Given
 		User user = new User(generateName(), generateEmail());
-		Mockito.when(userRepository.findById("SomeId")).thenReturn(Optional.of(user));
+		user.setId(generateId());
+		Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
 		// When
-		UserDto userDtoFound = userService.getUser("SomeId");
+		UserDto userDtoFound = userService.getUser(user.getId());
 
 		// Then
 		Assert.isTrue(user.getName().equals(userDtoFound.getName()), "Failed to retrieve user");
+	}
+
+	@Test
+	@WithUserDetails(UserDetailsTestConfiguration.REGULAR_USER)
+	public void whenGetOwnUserAsRegularUser_thenReturnUser() {
+
 	}
 }

@@ -4,7 +4,9 @@ import codes.cyrus.ticketboard.CommonTest;
 import codes.cyrus.ticketboard.UserDetailsTestConfiguration;
 import codes.cyrus.ticketboard.document.Role;
 import codes.cyrus.ticketboard.document.User;
+import codes.cyrus.ticketboard.repository.ProjectRepository;
 import codes.cyrus.ticketboard.repository.UserRepository;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -21,23 +23,50 @@ import java.util.Optional;
 @Import(UserDetailsTestConfiguration.class)
 public abstract class CommonServiceTest extends CommonTest {
 
+	private static final User REGULAR_USER;
+	private static final User ADMIN_USER;
+	private static final User SUPER_ADMIN_USER;
+
+	static {
+		REGULAR_USER = new User("Regular User", UserDetailsTestConfiguration.REGULAR_USER);
+		REGULAR_USER.setId(new ObjectId().toString());
+
+		ADMIN_USER = new User("Admin User", UserDetailsTestConfiguration.ADMIN_USER);
+		ADMIN_USER.setId(new ObjectId().toString());
+		ADMIN_USER.addRole(Role.ADMIN);
+
+		SUPER_ADMIN_USER = new User("Superadmin User", UserDetailsTestConfiguration.SUPERADMIN_USER);
+		SUPER_ADMIN_USER.setId(new ObjectId().toString());
+		SUPER_ADMIN_USER.addRole(Role.SUPERADMIN);
+	}
+
 	@MockBean
 	UserRepository userRepository;
 
+	@MockBean
+	ProjectRepository projectRepository;
+
 	@Before
 	public void setUp() {
-		User regularUser = new User("Regular User", UserDetailsTestConfiguration.REGULAR_USER);
-		regularUser.setId(new ObjectId().toString());
-		Mockito.when(userRepository.findByEmailIgnoreCase(regularUser.getEmail())).thenReturn(Optional.of(regularUser));
+		Mockito.when(userRepository.findByEmailIgnoreCase(REGULAR_USER.getEmail()))
+				.thenReturn(Optional.of(ObjectUtils.clone(REGULAR_USER)));
 
-		User adminUser = new User("Admin User", UserDetailsTestConfiguration.ADMIN_USER);
-		adminUser.setId(new ObjectId().toString());
-		adminUser.addRole(Role.ADMIN);
-		Mockito.when(userRepository.findByEmailIgnoreCase(adminUser.getEmail())).thenReturn(Optional.of(adminUser));
+		Mockito.when(userRepository.findByEmailIgnoreCase(ADMIN_USER.getEmail()))
+				.thenReturn(Optional.of(ObjectUtils.clone(ADMIN_USER)));
 
-		User superadminUser = new User("Superadmin User", UserDetailsTestConfiguration.SUPERADMIN_USER);
-		superadminUser.setId(new ObjectId().toString());
-		superadminUser.addRole(Role.SUPERADMIN);
-		Mockito.when(userRepository.findByEmailIgnoreCase(superadminUser.getEmail())).thenReturn(Optional.of(superadminUser));
+		Mockito.when(userRepository.findByEmailIgnoreCase(SUPER_ADMIN_USER.getEmail()))
+				.thenReturn(Optional.of(ObjectUtils.clone(SUPER_ADMIN_USER)));
+	}
+
+	public User getRegularUser() {
+		return ObjectUtils.clone(REGULAR_USER);
+	}
+
+	public User getAdminUser() {
+		return ObjectUtils.clone(ADMIN_USER);
+	}
+
+	public User getSuperAdminUser() {
+		return ObjectUtils.clone(SUPER_ADMIN_USER);
 	}
 }

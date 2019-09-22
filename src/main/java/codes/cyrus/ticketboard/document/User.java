@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Document
-public class User extends CommonDocument {
+public class User extends CommonDocument implements Cloneable {
 
 	@Indexed(unique = true)
 	private String email;
@@ -92,5 +92,19 @@ public class User extends CommonDocument {
 				.append(name)
 				.append(email)
 				.toHashCode();
+	}
+
+	@Override
+	public User clone() throws CloneNotSupportedException {
+		super.clone();
+		User user = new User(getName(), getEmail());
+		user.setId(getId());
+		user.setCreatorId(getCreatorId());
+		user.setCreateDate(getCreateDate());
+		user.setUpdateDate(getUpdateDate());
+		user.password = password;
+		user.roles = roles;
+
+		return user;
 	}
 }

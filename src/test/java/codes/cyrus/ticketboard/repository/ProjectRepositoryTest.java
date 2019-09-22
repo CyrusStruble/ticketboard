@@ -20,7 +20,7 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 	public void whenFindProjectById_thenReturnProject() {
 		// Given
 		Project project = new Project(generateName());
-		project.setCreatorId(generateUserId());
+		project.setCreatorId(generateId());
 		project = projectRepository.save(project);
 
 		// When
@@ -36,7 +36,7 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenFindProjectsByCreatorId_thenReturnProjects() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project1 = new Project(generateName());
 		project1.setCreatorId(creatorId);
 		project1 = projectRepository.save(project1);
@@ -62,22 +62,22 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 		List<String> associatedUserProjectIds = new ArrayList<>();
 
 		// Given
-		String associatedUserId = generateUserId();
+		String associatedUserId = generateId();
 
 		Project project1 = new Project(generateName());
-		project1.setCreatorId(generateUserId());
+		project1.setCreatorId(generateId());
 		project1.associateUserId(associatedUserId);
 		project1 = projectRepository.save(project1);
 		associatedUserProjectIds.add(project1.getId());
 
 		Project project2 = new Project(generateName());
-		project2.setCreatorId(generateUserId());
+		project2.setCreatorId(generateId());
 		project2.associateUserId(associatedUserId);
 		project2 = projectRepository.save(project2);
 		associatedUserProjectIds.add(project2.getId());
 
 		Project project3 = new Project(generateName());
-		project3.setCreatorId(generateUserId());
+		project3.setCreatorId(generateId());
 		project3.associateUserId(associatedUserId);
 		project3 = projectRepository.save(project2);
 
@@ -98,7 +98,7 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenDeleteProjectsByCreatorId_thenProjectsAreDeleted() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project1 = new Project(generateName());
 		project1.setCreatorId(creatorId);
 		project1 = projectRepository.save(project1);
@@ -108,7 +108,7 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 		project2 = projectRepository.save(project2);
 
 		Project project3 = new Project(generateName());
-		project3.setCreatorId(generateUserId());
+		project3.setCreatorId(generateId());
 		project3 = projectRepository.save(project3);
 
 		// When
@@ -128,10 +128,10 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenFindByCreatorIdOrAssociatedUserIds_thenReturnProjectIds() {
 		// Given
-		String creatorId1 = generateUserId();
-		String creatorId2 = generateUserId();
-		String associatedUserId1 = generateUserId();
-		String associatedUserId2 = generateUserId();
+		String creatorId1 = generateId();
+		String creatorId2 = generateId();
+		String associatedUserId1 = generateId();
+		String associatedUserId2 = generateId();
 
 		Project project1 = new Project(generateName());
 		project1.setCreatorId(creatorId1);

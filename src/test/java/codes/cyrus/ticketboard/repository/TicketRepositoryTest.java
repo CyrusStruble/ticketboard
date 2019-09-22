@@ -20,7 +20,7 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenFindByProjectId_thenReturnTickets() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project = new Project(generateName());
 		project.setCreatorId(creatorId);
 		project.setPrefix("CYR1");
@@ -49,7 +49,7 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenCountByProjectId_thenReturnCount() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project = new Project(generateName());
 		project.setCreatorId(creatorId);
 		project.setPrefix("CYR2");
@@ -76,7 +76,7 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenCountByProjectIdAndPriority_thenReturnCount() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project = new Project(generateName());
 		project.setCreatorId(creatorId);
 		project.setPrefix("CYR3");
@@ -114,7 +114,7 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenFindByProjectIdAndPriority_thenReturnTickets() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project = new Project(generateName());
 		project.setCreatorId(creatorId);
 		project.setPrefix("CYR4");
@@ -155,7 +155,7 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenFindByName_thenReturnTicket() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project = new Project(generateName());
 		project.setCreatorId(creatorId);
 		project.setPrefix("CYR5");
@@ -179,7 +179,7 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 	@Test(expected = org.springframework.dao.DuplicateKeyException.class)
 	public void whenCreatingTicketWithDuplicateName_thenFailToCreateTicket() {
 		// Given
-		String creatorId = generateUserId();
+		String creatorId = generateId();
 		Project project = new Project(generateName());
 		project.setCreatorId(creatorId);
 		project.setPrefix("CYR6");
