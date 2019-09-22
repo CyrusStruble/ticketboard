@@ -5,12 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,8 +27,8 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 		Project projectFound = projectRepository.findById(project.getId()).get();
 
 		// Then
-		Assert.notNull(projectFound, "No project found");
-		Assert.isTrue(project.getId().equals(projectFound.getId()), "No project found");
+		assertThat(projectFound.getId(), equalTo(project.getId()));
+		assertThat(projectFound.getCreatorId(), equalTo(project.getCreatorId()));
 
 		cleanupProject(project);
 	}
@@ -49,18 +49,14 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 		List<Project> projectsFound = projectRepository.findByCreatorId(creatorId);
 
 		// Then
-		Assert.notEmpty(projectsFound, "No projects found");
-		Assert.isTrue(projectsFound.size() == 2, "Failed to find exactly two projects");
-		Assert.isTrue(projectsFound.get(0).getCreatorId().equals(creatorId), "Found a project with non-matching creatorId");
-		Assert.isTrue(projectsFound.get(1).getCreatorId().equals(creatorId), "Found a project with non-matching creatorId");
+		assertThat(projectsFound, hasSize(2));
+		assertThat(projectsFound, hasItems(project1, project2));
 
 		cleanupProject(project1, project2);
 	}
 
 	@Test
 	public void whenFindProjectsByAssociatedUserIds_thenReturnProjects() {
-		List<String> associatedUserProjectIds = new ArrayList<>();
-
 		// Given
 		String associatedUserId = generateId();
 
@@ -68,29 +64,23 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 		project1.setCreatorId(generateId());
 		project1.associateUserId(associatedUserId);
 		project1 = projectRepository.save(project1);
-		associatedUserProjectIds.add(project1.getId());
 
 		Project project2 = new Project(generateName());
 		project2.setCreatorId(generateId());
 		project2.associateUserId(associatedUserId);
 		project2 = projectRepository.save(project2);
-		associatedUserProjectIds.add(project2.getId());
 
 		Project project3 = new Project(generateName());
 		project3.setCreatorId(generateId());
-		project3.associateUserId(associatedUserId);
-		project3 = projectRepository.save(project2);
+		project3 = projectRepository.save(project3);
 
 		// When
 		List<Project> projectsFound = projectRepository.findByAssociatedUserIds(associatedUserId);
 
 		// Then
-		Assert.notEmpty(projectsFound, "No projects found");
-		Assert.isTrue(projectsFound.size() == 2, "Failed to find exactly two projects");
-		Assert.isTrue(associatedUserProjectIds.contains(projectsFound.get(0).getId()),
-				"Project with non-matching associatedUserIds found");
-		Assert.isTrue(associatedUserProjectIds.contains(projectsFound.get(1).getId()),
-				"Project with non-matching associatedUserIds found");
+		assertThat(projectsFound, hasSize(2));
+		assertThat(projectsFound, hasItems(project1, project2));
+		assertThat(projectsFound, not(hasItem(project3)));
 
 		cleanupProject(project1, project2, project3);
 	}
@@ -118,9 +108,9 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 		Optional<Project> project3Found = projectRepository.findById(project3.getId());
 
 		// Then
-		Assert.isTrue(!project1Found.isPresent(), "Failed to delete project by owner");
-		Assert.isTrue(!project2Found.isPresent(), "Failed to delete project by owner");
-		Assert.isTrue(project3Found.isPresent(), "Incorrectly deleted project with different owner");
+		assertThat(project1Found.isPresent(), is(false));
+		assertThat(project2Found.isPresent(), is(false));
+		assertThat(project3Found.isPresent(), is(true));
 
 		cleanupProject(project1, project2, project3);
 	}
@@ -156,22 +146,17 @@ public class ProjectRepositoryTest extends CommonRepositoryTest {
 		List<Project> projectsFoundByAssociatedUser2 = projectRepository.findByCreatorIdOrAssociatedUserIds(associatedUserId2, associatedUserId2);
 
 		// Then
-		Assert.notEmpty(projectsFoundByOwner1, "Failed to find projects");
-		Assert.isTrue(projectsFoundByOwner1.size() == 2, "Failed to find exactly two projects");
-		Assert.isTrue(projectsFoundByOwner1.containsAll(Arrays.asList(project1, project2)), "Failed to find matching projects");
+		assertThat(projectsFoundByOwner1, hasSize(2));
+		assertThat(projectsFoundByOwner1, hasItems(project1, project2));
 
-		Assert.notEmpty(projectsFoundByOwner2, "Failed to find project");
-		Assert.isTrue(projectsFoundByOwner2.size() == 1, "Failed to find exactly one project");
-		Assert.isTrue(projectsFoundByOwner2.contains(project3), "Failed to find matching project");
+		assertThat(projectsFoundByOwner2, hasSize(1));
+		assertThat(projectsFoundByOwner2, hasItem(project3));
 
-		Assert.notEmpty(projectsFoundByAssociatedUser1, "Failed to find project");
-		Assert.isTrue(projectsFoundByAssociatedUser1.size() == 1, "Failed to find exactly one project");
-		Assert.isTrue(projectsFoundByAssociatedUser1.contains(project1), "Failed to find matching project");
+		assertThat(projectsFoundByAssociatedUser1, hasSize(1));
+		assertThat(projectsFoundByAssociatedUser1, hasItem(project1));
 
-		Assert.notEmpty(projectsFoundByAssociatedUser2, "Failed to find projects");
-		Assert.isTrue(projectsFoundByAssociatedUser2.size() == 3, "Failed to find exactly three projects");
-		Assert.isTrue(projectsFoundByAssociatedUser2.containsAll(Arrays.asList(project1, project2, project3)),
-				"Failed to find matching projects");
+		assertThat(projectsFoundByAssociatedUser2, hasSize(3));
+		assertThat(projectsFoundByAssociatedUser2, hasItems(project1, project2, project3));
 
 		cleanupProject(project1, project2, project3);
 	}

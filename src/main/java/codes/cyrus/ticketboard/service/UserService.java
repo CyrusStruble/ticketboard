@@ -213,6 +213,7 @@ public class UserService extends CommonService<UserDto, User> {
 		userDto.setCreateDate(user.getCreateDate());
 		userDto.setUpdateDate(user.getUpdateDate());
 		userDto.setRoles(user.getRoles());
+		userDto.setPassword(user.getPassword());
 
 		return userDto;
 	}

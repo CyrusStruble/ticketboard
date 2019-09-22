@@ -18,4 +18,6 @@ public abstract class CommonTest {
 	protected String generateEmail() {
 		return RandomStringUtils.randomAlphabetic(10) + "@test-it-well.xyz";
 	}
+
+	protected String generatePassword() { return RandomStringUtils.randomAlphanumeric(15); }
 }

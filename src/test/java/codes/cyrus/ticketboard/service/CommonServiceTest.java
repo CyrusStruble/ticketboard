@@ -2,6 +2,8 @@ package codes.cyrus.ticketboard.service;
 
 import codes.cyrus.ticketboard.CommonTest;
 import codes.cyrus.ticketboard.UserDetailsTestConfiguration;
+import codes.cyrus.ticketboard.document.CommonDocument;
+import codes.cyrus.ticketboard.document.Project;
 import codes.cyrus.ticketboard.document.Role;
 import codes.cyrus.ticketboard.document.User;
 import codes.cyrus.ticketboard.repository.ProjectRepository;
@@ -11,12 +13,15 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -46,8 +51,19 @@ public abstract class CommonServiceTest extends CommonTest {
 	@MockBean
 	ProjectRepository projectRepository;
 
+	protected Answer<CommonDocument> mockSave = i -> {
+		CommonDocument document = i.getArgument(0);
+
+		if (document.getId() == null) {
+			document.setId(generateId());
+		}
+
+		return document;
+	};
+
 	@Before
 	public void setUp() {
+		// Mock findByEmailIgnoreCase to return mock users
 		Mockito.when(userRepository.findByEmailIgnoreCase(REGULAR_USER.getEmail()))
 				.thenReturn(Optional.of(ObjectUtils.clone(REGULAR_USER)));
 
@@ -56,6 +72,10 @@ public abstract class CommonServiceTest extends CommonTest {
 
 		Mockito.when(userRepository.findByEmailIgnoreCase(SUPER_ADMIN_USER.getEmail()))
 				.thenReturn(Optional.of(ObjectUtils.clone(SUPER_ADMIN_USER)));
+
+		// Mock mockSave
+		Mockito.when(userRepository.save(any(User.class))).thenAnswer(mockSave);
+		Mockito.when(projectRepository.save(any(Project.class))).thenAnswer(mockSave);
 	}
 
 	public User getRegularUser() {

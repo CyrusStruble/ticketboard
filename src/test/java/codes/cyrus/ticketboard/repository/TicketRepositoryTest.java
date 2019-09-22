@@ -7,11 +7,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.Assert;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,9 +40,9 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 		List<Ticket> tickets = ticketRepository.findByProjectId(project.getId());
 
 		// Then
-		Assert.notEmpty(tickets, "Failed to find tickets");
-		Assert.isTrue(tickets.size() == 2, "Failed to find exactly two tickets, found: " + tickets.toString());
-		Assert.isTrue(tickets.containsAll(Arrays.asList(ticket1, ticket2)), "Failed to find matching tickets");
+		assertThat(tickets, notNullValue());
+		assertThat(tickets, hasSize(2));
+		assertThat(tickets, hasItems(ticket1, ticket2));
 
 		cleanupProject(project);
 	}
@@ -67,8 +68,8 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 		Long count = ticketRepository.countByProjectId(project.getId());
 
 		// Then
-		Assert.notNull(count, "Count is null");
-		Assert.isTrue(count == 2, "Count does not equal 2, found: " + count);
+		assertThat(count, notNullValue());
+		assertThat(count, is(2L));
 
 		cleanupProject(project);
 	}
@@ -102,11 +103,8 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 		Long countOfHighest = ticketRepository.countByProjectIdAndPriority(project.getId(), Priority.HIGHEST);
 
 		// Then
-		Assert.notNull(countOfHigh, "Count is null");
-		Assert.isTrue(countOfHigh == 2, "Count does not equal 2, found: " + countOfHigh);
-
-		Assert.notNull(countOfHighest, "Count is null");
-		Assert.isTrue(countOfHighest == 1, "Count does not equal 1, found: " + countOfHighest);
+		assertThat(countOfHigh, is(2L));
+		assertThat(countOfHighest, is(1L));
 
 		cleanupProject(project);
 	}
@@ -141,13 +139,11 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 		List<Ticket> ticketsHighest = ticketRepository.findByProjectIdAndPriority(project.getId(), Priority.HIGHEST);
 
 		// Then
-		Assert.notEmpty(ticketsHigh, "Failed to find tickets");
-		Assert.isTrue(ticketsHigh.size() == 2, "Failed to find exactly two tickets, found: " + ticketsHigh.toString());
-		Assert.isTrue(ticketsHigh.containsAll(Arrays.asList(ticket1, ticket2)), "Failed to find matching tickets");
+		assertThat(ticketsHigh, hasSize(2));
+		assertThat(ticketsHigh, hasItems(ticket1, ticket2));
 
-		Assert.notEmpty(ticketsHighest, "Failed to find tickets");
-		Assert.isTrue(ticketsHighest.size() == 1, "Failed to find exactly two tickets, found: " + ticketsHigh.toString());
-		Assert.isTrue(ticketsHighest.contains(ticket3), "Failed to find matching tickets");
+		assertThat(ticketsHighest, hasSize(1));
+		assertThat(ticketsHighest, hasItem(ticket3));
 
 		cleanupProject(project);
 	}
@@ -170,8 +166,8 @@ public class TicketRepositoryTest extends CommonRepositoryTest {
 		Optional<Ticket> ticketFound = ticketRepository.findByName(ticket.getName());
 
 		// Then
-		Assert.isTrue(ticketFound.isPresent(), "Failed to find ticket");
-		Assert.isTrue(ticketFound.get().equals(ticket), "Failed to find matching ticket");
+		assertThat(ticketFound.isPresent(), is(true));
+		assertThat(ticketFound.get(), equalTo(ticket));
 
 		cleanupProject(project);
 	}

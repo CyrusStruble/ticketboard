@@ -6,9 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.Assert;
 
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -24,8 +26,7 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 		User userFound = userRepository.findById(user.getId()).get();
 
 		// Then
-		Assert.notNull(userFound, "No user found");
-		Assert.isTrue(user.getId().equals(userFound.getId()), "No user found");
+		assertThat(userFound, equalTo(user));
 
 		cleanupUser(user);
 	}
@@ -33,9 +34,9 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenFindByNameIgnoreCase_thenReturnUser() {
 		// Given
-		String userAName = generateName();
-		String userAEmail = generateEmail();
-		User user1 = new User(userAName, userAEmail);
+//		String user1Name = generateName();
+//		String user1Email = generateEmail();
+		User user1 = new User(generateName(), generateEmail());
 		user1 = userRepository.save(user1);
 
 		// When
@@ -43,11 +44,8 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 		List<User> usersFoundIgnoreCase = userRepository.findByNameIgnoreCase(user1.getName().toLowerCase());
 
 		// Then
-		Assert.notEmpty(usersFoundWithCase, "No users found");
-		Assert.isTrue(usersFoundWithCase.get(0).getName().equalsIgnoreCase(userAName), "User not found with exact case");
-
-		Assert.notEmpty(usersFoundIgnoreCase, "No users found");
-		Assert.isTrue(usersFoundIgnoreCase.get(0).getName().equalsIgnoreCase(userAName), "User not found with inexact case");
+		assertThat(usersFoundWithCase, hasItem(user1));
+		assertThat(usersFoundIgnoreCase, hasItem(user1));
 
 		cleanupUser(user1);
 	}
@@ -55,12 +53,10 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 	@Test(expected = org.springframework.dao.DuplicateKeyException.class)
 	public void whenCreatingUserWithDuplicateEmail_thenFailToCreateUser() {
 		// Given
-		String userAName = generateName();
-		String userAEmail = generateEmail();
-		User user1 = new User(userAName, userAEmail);
+		User user1 = new User(generateName(), generateEmail());
 		user1 = userRepository.save(user1);
 
-		User user2 = new User(generateName(), userAEmail);
+		User user2 = new User(generateName(), user1.getEmail());
 
 		// When
 		userRepository.save(user2);
@@ -78,11 +74,10 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 		user = userRepository.save(user);
 
 		// When
-		User userFound = userRepository.findByEmailIgnoreCase(user.getEmail()).get();
+		User userFound = userRepository.findByEmailIgnoreCase(user.getEmail().toUpperCase()).get();
 
 		// Then
-		Assert.notNull(userFound, "No user found");
-		Assert.isTrue(user.getId().equals(userFound.getId()), "No user found");
+		assertThat(userFound, equalTo(user));
 
 		cleanupUser(user);
 	}
