@@ -2,7 +2,9 @@ package codes.cyrus.ticketboard;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bson.types.ObjectId;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public abstract class CommonTest {
 
 	protected String generateName() {
