@@ -34,8 +34,6 @@ public class UserRepositoryTest extends CommonRepositoryTest {
 	@Test
 	public void whenFindByNameIgnoreCase_thenReturnUser() {
 		// Given
-//		String user1Name = generateName();
-//		String user1Email = generateEmail();
 		User user1 = new User(generateName(), generateEmail());
 		user1 = userRepository.save(user1);
 
