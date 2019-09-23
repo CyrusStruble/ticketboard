@@ -52,6 +52,47 @@ public class UserServiceTest extends CommonServiceTest {
 	}
 
 	@Test
+	@WithUserDetails(UserDetailsTestConfiguration.ADMIN_USER)
+	public void whenGetUserAsAdminWithAccess_thenGetUser() {
+		// Given
+		User adminUser = getAdminUser();
+
+		User user = new User(generateName(), generateEmail());
+		user.setId(generateId());
+		Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+		String projectId = generateId();
+		Project project = new Project(generateName());
+		project.setId(projectId);
+		project.associateUserId(adminUser.getId());
+
+		Mockito.when(projectRepository.findByCreatorIdOrAssociatedUserIds(adminUser.getId(), adminUser.getId()))
+				.thenReturn(Collections.singletonList(project));
+		Mockito.when(projectRepository.findByCreatorIdOrAssociatedUserIds(user.getId(), user.getId()))
+				.thenReturn(Collections.singletonList(project));
+
+		// When
+		UserDto userDtoFound = userService.getUser(user.getId());
+
+		// Then
+		assertThat(user.getName(), equalTo(userDtoFound.getName()));
+	}
+
+	@Test(expected = ForbiddenException.class)
+	@WithUserDetails(UserDetailsTestConfiguration.ADMIN_USER)
+	public void whenGetUserAsAdminWithoutAccess_thenForbiddenExceptionOccurs() {
+		// Given
+		String userId = generateId();
+
+		// When
+		userService.getUser(userId);
+
+		// Then
+		// ForbiddenException occurs
+	}
+
+
+	@Test
 	@WithUserDetails(UserDetailsTestConfiguration.REGULAR_USER)
 	public void whenGetOwnUserAsRegularUser_thenReturnUser() {
 		// Given
@@ -207,5 +248,83 @@ public class UserServiceTest extends CommonServiceTest {
 
 		// Then
 		assertThat(userDtoFound.getId(), equalTo(user.getId()));
+	}
+
+	@Test
+	@WithUserDetails(UserDetailsTestConfiguration.SUPERADMIN_USER)
+	public void whenDeleteUserAsSuperAdmin_thenUserIsDeleted() {
+		// Given
+		String userId = generateId();
+
+		// When
+		userService.deleteUser(userId);
+
+		// Then
+		Mockito.verify(userRepository).deleteById(userId);
+	}
+
+	@Test
+	@WithUserDetails(UserDetailsTestConfiguration.ADMIN_USER)
+	public void whenDeleteUserAsAdminWithAccessAsMember_thenUserIsDeleted() {
+		// Given
+		User adminUser = getAdminUser();
+
+		String userId = generateId();
+
+		String projectId = generateId();
+		Project project = new Project(generateName());
+		project.setId(projectId);
+		project.associateUserId(adminUser.getId());
+
+		Mockito.when(projectRepository.findByCreatorIdOrAssociatedUserIds(adminUser.getId(), adminUser.getId()))
+				.thenReturn(Collections.singletonList(project));
+		Mockito.when(projectRepository.findByCreatorIdOrAssociatedUserIds(userId, userId))
+				.thenReturn(Collections.singletonList(project));
+
+		// When
+		userService.deleteUser(userId);
+
+		// Then
+		Mockito.verify(userRepository).deleteById(userId);
+	}
+
+
+	@Test(expected = ForbiddenException.class)
+	@WithUserDetails(UserDetailsTestConfiguration.ADMIN_USER)
+	public void whenDeleteUserAsAdminWithoutAccess_thenForbiddenExceptionOccurs() {
+		// Given
+		String userId = generateId();
+
+		// When
+		userService.deleteUser(userId);
+
+		// Then
+		// ForbiddenException occurs
+	}
+
+	@Test(expected = ForbiddenException.class)
+	@WithUserDetails(UserDetailsTestConfiguration.REGULAR_USER)
+	public void whenDeleteUserAsRegularUser_thenForbiddenExceptionOccurs() {
+		// Given
+		String userId = generateId();
+
+		// When
+		userService.deleteUser(userId);
+
+		// Then
+		// ForbiddenException occurs
+	}
+
+	@Test
+	@WithUserDetails(UserDetailsTestConfiguration.REGULAR_USER)
+	public void whenDeleteOwnUserAsRegularUser_thenUserIsDeleted() {
+		// Given
+		User user = getRegularUser();
+
+		// When
+		userService.deleteUser(user.getId());
+
+		// Then
+		Mockito.verify(userRepository).deleteById(user.getId());
 	}
 }
