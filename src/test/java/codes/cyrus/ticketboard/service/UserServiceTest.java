@@ -48,6 +48,7 @@ public class UserServiceTest extends CommonServiceTest {
 		UserDto userDtoFound = userService.getUser(user.getId());
 
 		// Then
+		Mockito.verify(userRepository).findById(user.getId());
 		assertThat(user.getName(), equalTo(userDtoFound.getName()));
 	}
 
@@ -75,6 +76,7 @@ public class UserServiceTest extends CommonServiceTest {
 		UserDto userDtoFound = userService.getUser(user.getId());
 
 		// Then
+		Mockito.verify(userRepository).findById(user.getId());
 		assertThat(user.getName(), equalTo(userDtoFound.getName()));
 	}
 
@@ -103,6 +105,7 @@ public class UserServiceTest extends CommonServiceTest {
 		UserDto userDtoFound = userService.getUser(user.getId());
 
 		// Then
+		Mockito.verify(userRepository).findById(user.getId());
 		assertThat(user.getName(), equalTo(userDtoFound.getName()));
 	}
 
@@ -131,6 +134,7 @@ public class UserServiceTest extends CommonServiceTest {
 		UserDto userDtoCreated = userService.signup(userDto);
 
 		// Then
+		Mockito.verify(userRepository).save(any(User.class));
 		assertThat(userDtoCreated.getName(), equalTo(userDto.getName()));
 		assertThat(userDtoCreated.getRoles(), hasSize(2));
 		assertThat(userDtoCreated.getRoles(), hasItem(Role.ADMIN));
@@ -160,6 +164,8 @@ public class UserServiceTest extends CommonServiceTest {
 		UserDto userDtoCreated = userService.createUser(userDto, projectId);
 
 		// Then
+		Mockito.verify(projectRepository).save(any(Project.class));
+		Mockito.verify(userRepository).save(any(User.class));
 		assertThat(userDtoCreated.getName(), equalTo(userDto.getName()));
 		assertThat(userDtoCreated.getRoles(), hasSize(1));
 		assertThat(userDtoCreated.getRoles(), hasItem(Role.USER));
@@ -196,6 +202,8 @@ public class UserServiceTest extends CommonServiceTest {
 		UserDto userDtoCreated = userService.createUser(userDto, projectId);
 
 		// Then
+		Mockito.verify(projectRepository).save(any(Project.class));
+		Mockito.verify(userRepository).save(any(User.class));
 		assertThat(userDtoCreated.getName(), equalTo(userDto.getName()));
 		assertThat(userDtoCreated.getRoles(), hasSize(1));
 		assertThat(userDtoCreated.getRoles(), hasItem(Role.USER));
@@ -247,6 +255,7 @@ public class UserServiceTest extends CommonServiceTest {
 		UserDto userDtoFound = userService.getCurrentUser();
 
 		// Then
+		Mockito.verify(userRepository).findByEmailIgnoreCase(user.getEmail());
 		assertThat(userDtoFound.getId(), equalTo(user.getId()));
 	}
 
